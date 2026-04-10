@@ -10,10 +10,13 @@ class Task extends Model
         'title',
         'description',
         'status',
+        'priority',
         'due_date',
+        'assigned_users',
     ];
 
     protected $casts = [
         'due_date' => 'date',
+        'assigned_users' => 'array',
     ];
 }

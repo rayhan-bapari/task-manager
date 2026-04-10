@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +6,286 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: "Syne", sans-serif;
+    --font-mono: "DM Mono", monospace;
+
+    --color-ink: #0d0d0d;
+    --color-ink-soft: #1a1a1a;
+    --color-surface: #111111;
+    --color-panel: #171717;
+    --color-border: #2a2a2a;
+    --color-border-light: #333333;
+    --color-amber: #f5a623;
+    --color-amber-glow: #f5a62330;
+    --color-amber-soft: #f5a62315;
+    --color-text: #e8e3dc;
+    --color-text-muted: #7a756e;
+    --color-text-dim: #4a4540;
+    --color-pending: #6b7280;
+    --color-progress: #3b82f6;
+    --color-done: #22c55e;
+    --color-danger: #ef4444;
+}
+
+/* ─── Theme tokens ─────────────────────────────────────── */
+@theme {
+    --color-ink: #0f0f0f;
+    --color-ink-soft: #1a1a1a;
+    --color-panel: #161616;
+    --color-border: #2a2a2a;
+    --color-border-light: #3a3a3a;
+    --color-amber: #f5a623;
+    --color-text: #e5e5e5;
+    --color-text-dim: #6b7280;
+
+    --font-display: "Inter", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse-glow {
+    0%,
+    100% {
+        box-shadow: 0 0 4px #f5a62360;
+    }
+    50% {
+        box-shadow: 0 0 10px #f5a62390;
+    }
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+@layer base {
+    *,
+    *::before,
+    *::after {
+        @apply box-border;
+    }
+
+    body {
+        @apply min-h-svh;
+        font-family: var(--font-display);
+        background-color: var(--color-ink);
+        color: var(--color-text);
+    }
+
+    body::before {
+        content: "";
+        @apply fixed inset-0 pointer-events-none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        z-index: 9999;
+        opacity: 0.4;
+    }
+
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--color-ink);
+    }
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-sm;
+        background: var(--color-border-light);
+    }
+
+    select option {
+        background: var(--color-panel);
+        color: var(--color-text);
+    }
+}
+
+/* ─── Utilities ──────────────────────────────────────────── */
+
+/* Typography */
+@utility mono {
+    font-family: var(--font-mono);
+}
+
+/* Sidebar accent line */
+@utility sidebar-accent {
+    @apply w-0.5;
+    background: linear-gradient(to bottom, var(--color-amber), transparent);
+}
+
+/* Task card */
+@utility task-card {
+    @apply border transition-all duration-200 ease-in-out;
+    background: var(--color-panel);
+    border-color: var(--color-border);
+    animation: slideIn 0.3s ease forwards;
+
+    &:hover {
+        @apply translate-x-0.5;
+        border-color: var(--color-border-light);
+    }
+
+    &.completed-card {
+        @apply opacity-55;
+    }
+
+    &.removing {
+        animation: fadeOut 0.25s ease forwards;
+    }
+}
+
+/* Status badges */
+@utility badge-pending {
+    @apply border;
+    background: #6b728018;
+    color: #9ca3af;
+    border-color: #6b728030;
+}
+
+@utility badge-progress {
+    @apply border;
+    background: #3b82f618;
+    color: #60a5fa;
+    border-color: #3b82f630;
+}
+
+@utility badge-done {
+    @apply border;
+    background: #22c55e18;
+    color: #4ade80;
+    border-color: #22c55e30;
+}
+
+/* Priority dots */
+@utility dot-high {
+    @apply bg-red-500;
+    box-shadow: 0 0 6px #ef444460;
+}
+
+@utility dot-medium {
+    background: var(--color-amber);
+    box-shadow: 0 0 6px #f5a62360;
+}
+
+@utility dot-low {
+    @apply bg-gray-500;
+}
+
+/* Input */
+@utility tf-input {
+    @apply border outline-none transition-colors duration-200;
+    background: var(--color-ink-soft);
+    border-color: var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-display);
+
+    &::placeholder {
+        color: var(--color-text-dim);
+    }
+
+    &:focus {
+        border-color: var(--color-amber);
+    }
+}
+
+/* Primary button */
+@utility btn-primary {
+    @apply font-bold transition-all duration-150 ease-in-out;
+    background: var(--color-amber);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+
+    &:hover {
+        @apply -translate-y-px;
+        background: #f7b84a;
+        box-shadow: 0 4px 16px #f5a62340;
+    }
+
+    &:active {
+        @apply translate-y-0;
+    }
+}
+
+/* Tab button */
+@utility tab-btn {
+    @apply transition-all duration-150 ease-in-out;
+
+    &.active {
+        @apply border-b-2;
+        color: var(--color-amber);
+        border-color: var(--color-amber);
+    }
+}
+
+/* Progress bar fill */
+@utility progress-bar-fill {
+    background: linear-gradient(to right, var(--color-amber), #f7b84a);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modal overlay */
+@utility modal-overlay {
+    @apply backdrop-blur-sm;
+    background: rgb(0 0 0 / 0.7);
+}
+
+/* Stat card */
+@utility stat-card {
+    @apply border;
+    background: var(--color-panel);
+    border-color: var(--color-border);
+}
+
+/* Custom checkbox */
+@utility task-check {
+    @apply appearance-none relative shrink-0 cursor-pointer rounded border transition-all duration-150;
+    width: 18px;
+    height: 18px;
+    border-color: var(--color-border-light);
+    border-width: 1.5px;
+    background: transparent;
+
+    &:checked {
+        background: var(--color-amber);
+        border-color: var(--color-amber);
+
+        &::after {
+            content: "✓";
+            @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-extrabold;
+            color: var(--color-ink);
+            font-size: 11px;
+        }
+    }
+}
+
+/* Amber pulse */
+@utility pulse-amber {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Empty state */
+@utility empty-state {
+    @apply opacity-0;
+    animation: fadeIn 0.4s 0.1s forwards;
 }
