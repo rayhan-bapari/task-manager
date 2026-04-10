@@ -8,6 +8,11 @@ const taskList = document.getElementById('task-list');
 const emptyState = document.getElementById('empty-state');
 const pageAlert = document.getElementById('page-alert');
 const deleteModal = document.getElementById('delete-modal');
+const totalTasksElement = document.getElementById('stat-total');
+const inProgressTasksElement = document.getElementById('stat-progress');
+const completedTasksElement = document.getElementById('stat-done');
+const progressPercentageElement = document.getElementById('stat-pct');
+const progressBarElement = document.getElementById('progress-bar');
 
 const alertStyles = {
     error: {
@@ -74,6 +79,32 @@ const updateEmptyState = () => {
     taskList.classList.toggle('hidden', ! hasTasks);
     emptyState.classList.toggle('hidden', hasTasks);
     emptyState.classList.toggle('flex', ! hasTasks);
+};
+
+const updateSidebarStats = (stats) => {
+    if (! stats) {
+        return;
+    }
+
+    if (totalTasksElement) {
+        totalTasksElement.textContent = String(stats.total ?? 0);
+    }
+
+    if (inProgressTasksElement) {
+        inProgressTasksElement.textContent = String(stats.in_progress ?? 0);
+    }
+
+    if (completedTasksElement) {
+        completedTasksElement.textContent = String(stats.completed ?? 0);
+    }
+
+    if (progressPercentageElement) {
+        progressPercentageElement.textContent = `${stats.progress_percentage ?? 0}%`;
+    }
+
+    if (progressBarElement) {
+        progressBarElement.style.width = `${stats.progress_percentage ?? 0}%`;
+    }
 };
 
 const getCard = (taskId) => document.getElementById(`task-card-${taskId}`);
@@ -194,6 +225,7 @@ if (createForm) {
             });
 
             prependTaskCard(response.data.task?.html ?? '');
+            updateSidebarStats(response.data.stats);
             setElementAlert(createAlert, response.data.message ?? 'Task created successfully.', 'success');
             showPageAlert(response.data.message ?? 'Task created successfully.');
             createForm.reset();
@@ -274,6 +306,7 @@ if (editForm) {
             });
 
             replaceTaskCard(response.data.task?.id, response.data.task?.html ?? '');
+            updateSidebarStats(response.data.stats);
             setElementAlert(editAlert, response.data.message ?? 'Task updated successfully.', 'success');
             showPageAlert(response.data.message ?? 'Task updated successfully.');
 
@@ -321,6 +354,7 @@ window.changeStatus = async (taskId, status, element = null) => {
         });
 
         replaceTaskCard(taskId, response.data.task?.html ?? '');
+        updateSidebarStats(response.data.stats);
         showPageAlert(response.data.message ?? 'Task updated successfully.');
         return true;
     } catch (error) {
@@ -363,6 +397,7 @@ window.confirmDelete = async () => {
         });
 
         removeTaskCard(response.data.task?.id ?? taskId);
+        updateSidebarStats(response.data.stats);
         showPageAlert(response.data.message ?? 'Task deleted successfully.');
 
         if (typeof window.closeDeleteModal === 'function') {

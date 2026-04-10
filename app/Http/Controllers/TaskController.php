@@ -20,8 +20,9 @@ class TaskController extends Controller
             ->latest()
             ->paginate(10);
         $users = $this->userLookup();
+        $stats = $this->taskStats();
 
-        return view('pages.tasks.index', compact('tasks', 'users'));
+        return view('pages.tasks.index', compact('tasks', 'users', 'stats'));
     }
 
     /**
@@ -38,6 +39,7 @@ class TaskController extends Controller
                 'id' => $task->id,
                 'html' => $this->renderTaskCard($task),
             ],
+            'stats' => $this->taskStats(),
         ], 201);
     }
 
@@ -55,6 +57,7 @@ class TaskController extends Controller
                 'id' => $task->id,
                 'html' => $this->renderTaskCard($task->fresh()),
             ],
+            'stats' => $this->taskStats(),
         ]);
     }
 
@@ -72,6 +75,7 @@ class TaskController extends Controller
             'task' => [
                 'id' => $taskId,
             ],
+            'stats' => $this->taskStats(),
         ]);
     }
 
@@ -89,7 +93,7 @@ class TaskController extends Controller
 
         $validated['assigned_users'] = collect($validated['assigned_users'] ?? [])
             ->filter()
-            ->map(static fn(mixed $userId): int => (int) $userId)
+            ->map(static fn (mixed $userId): int => (int) $userId)
             ->values()
             ->all();
 
@@ -111,5 +115,26 @@ class TaskController extends Controller
             ->orderBy('name')
             ->get()
             ->keyBy('id');
+    }
+
+    /**
+     * @return array{total:int,in_progress:int,completed:int,progress_percentage:int}
+     */
+    private function taskStats(): array
+    {
+        $total = Task::query()->count();
+        $inProgress = Task::query()
+            ->where('status', 'in_progress')
+            ->count();
+        $completed = Task::query()
+            ->where('status', 'completed')
+            ->count();
+
+        return [
+            'total' => $total,
+            'in_progress' => $inProgress,
+            'completed' => $completed,
+            'progress_percentage' => $total > 0 ? (int) round(($completed / $total) * 100) : 0,
+        ];
     }
 }

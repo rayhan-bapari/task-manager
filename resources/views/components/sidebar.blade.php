@@ -24,15 +24,15 @@
       <div class="stat-card rounded-lg p-3">
         <div class="flex justify-between items-center mb-2">
           <span class="text-xs" style="color:var(--color-text-muted);">Total Tasks</span>
-          <span class="mono font-500 text-sm" id="stat-total" style="color:var(--color-amber);">0</span>
+          <span class="mono font-500 text-sm" id="stat-total" style="color:var(--color-amber);">{{ $stats['total'] ?? 0 }}</span>
         </div>
         <div class="flex justify-between items-center mb-2">
           <span class="text-xs" style="color:var(--color-text-muted);">In Progress</span>
-          <span class="mono font-500 text-sm" id="stat-progress" style="color:#60a5fa;">0</span>
+          <span class="mono font-500 text-sm" id="stat-progress" style="color:#60a5fa;">{{ $stats['in_progress'] ?? 0 }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-xs" style="color:var(--color-text-muted);">Completed</span>
-          <span class="mono font-500 text-sm" id="stat-done" style="color:#4ade80;">0</span>
+          <span class="mono font-500 text-sm" id="stat-done" style="color:#4ade80;">{{ $stats['completed'] ?? 0 }}</span>
         </div>
       </div>
 
@@ -40,10 +40,11 @@
       <div>
         <div class="flex justify-between mb-1.5">
           <span class="text-xs" style="color:var(--color-text-muted);">Progress</span>
-          <span class="mono text-xs" id="stat-pct" style="color:var(--color-amber);">0%</span>
+          <span class="mono text-xs" id="stat-pct" style="color:var(--color-amber);">{{ $stats['progress_percentage'] ?? 0 }}%</span>
         </div>
         <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--color-border);">
-          <div class="progress-bar-fill h-full rounded-full" id="progress-bar" style="width:0%"></div>
+          <div class="progress-bar-fill h-full rounded-full" id="progress-bar"
+            style="width:{{ $stats['progress_percentage'] ?? 0 }}%"></div>
         </div>
       </div>
     </div>
